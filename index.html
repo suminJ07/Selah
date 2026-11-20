@@ -46,7 +46,9 @@
       --shadow: 0 20px 55px #0005;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -78,11 +80,27 @@
       gap: 16px;
     }
 
-    h1 { margin: 0 0 6px; font-size: 30px; letter-spacing: -0.8px; }
-    .sub { margin: 0; color: var(--muted); font-size: 14px; }
-    label { display: block; margin-bottom: 8px; font-weight: 650; }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 30px;
+      letter-spacing: -0.8px;
+    }
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 650;
+    }
 
-    .theme-picker { display: flex; align-items: center; flex-shrink: 0; }
+    .theme-picker {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
     .theme-icon {
       display: inline-flex;
       align-items: center;
@@ -96,10 +114,26 @@
       color: var(--muted);
       cursor: pointer;
     }
-    .theme-icon:hover { background: var(--surface); color: var(--text); }
-    .theme-icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .theme-icon svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-    .theme-icon [hidden] { display: none; }
+    .theme-icon:hover {
+      background: var(--surface);
+      color: var(--text);
+    }
+    .theme-icon:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .theme-icon svg {
+      width: 19px;
+      height: 19px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .theme-icon [hidden] {
+      display: none;
+    }
 
     /* 상태 표시줄: 제목 아래에 일반 배치 (스크롤 시 함께 이동) */
     .status {
@@ -114,17 +148,45 @@
 
     .status[data-kind="ready"],
     .status[data-kind="playing"],
-    .status[data-kind="done"] { border-left-color: var(--accent); }
+    .status[data-kind="done"] {
+      border-left-color: var(--accent);
+    }
 
-    .status[data-kind="fading"] { border-left-color: #c78e44; }
-    .status[data-kind="error"] { border-left-color: var(--danger); }
-    .status-title { font-weight: 750; font-size: 15px; }
-    .status-message { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
-    .error-details { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-    .error-details p { margin: 5px 0; font-size: 13px; line-height: 1.6; }
-    .error-code { color: var(--muted); font-size: 12px; }
+    .status[data-kind="fading"] {
+      border-left-color: #c78e44;
+    }
+    .status[data-kind="error"] {
+      border-left-color: var(--danger);
+    }
+    .status-title {
+      font-weight: 750;
+      font-size: 15px;
+    }
+    .status-message {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .error-details {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .error-details p {
+      margin: 5px 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .error-code {
+      color: var(--muted);
+      font-size: 12px;
+    }
 
-    .urlrow { display: flex; gap: 8px; }
+    .urlrow {
+      display: flex;
+      gap: 8px;
+    }
     input[type="url"] {
       width: 100%;
       min-width: 0;
@@ -147,12 +209,20 @@
       cursor: pointer;
     }
 
-    button:disabled { opacity: 0.42; cursor: not-allowed; }
-    .load { white-space: nowrap; }
+    button:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+    .load {
+      white-space: nowrap;
+    }
 
     input:focus-visible,
     button:focus-visible,
-    select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    select:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
 
     .playerwrap {
       display: grid;
@@ -164,30 +234,201 @@
       background: var(--video);
     }
 
-    .playerwrap > div { width: 100%; height: 100%; }
-    .placeholder { padding: 20px; color: var(--muted); text-align: center; }
-    .vol { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
-    .vol label { margin: 0; white-space: nowrap; }
-    .vol input { width: 100%; padding: 0; accent-color: var(--accent); }
-    .vol span { min-width: 38px; text-align: right; }
-    .settings { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 20px 0; }
-    .settings label { margin: 0; }
-    .options { display: flex; gap: 5px; }
-    .options button { padding: 10px 14px; font-size: 14px; }
-    .options button.active { background: var(--accent); color: var(--accent-text); }
-    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .actions button { min-height: 60px; }
-    .start { background: var(--accent); color: var(--accent-text); }
-    .end { background: var(--danger); color: var(--danger-text); }
-    .small { margin: 16px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .playerwrap > div {
+      width: 100%;
+      height: 100%;
+    }
+    .placeholder {
+      padding: 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .vol {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .vol label {
+      margin: 0;
+      white-space: nowrap;
+    }
+    .vol input {
+      width: 100%;
+      padding: 0;
+      accent-color: var(--accent);
+    }
+    .vol span {
+      min-width: 38px;
+      text-align: right;
+    }
+    .settings {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .settings label {
+      margin: 0;
+    }
+    .fade-in-setting {
+      margin: 0 0 12px;
+    }
+    .fade-in-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .fade-in-toggle input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .fade-in-hint {
+      margin: 4px 0 0 28px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .fade-in-toggle input:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+    .options {
+      display: flex;
+      gap: 5px;
+    }
+    .options button {
+      padding: 10px 14px;
+      font-size: 14px;
+    }
+    .options button.active {
+      background: var(--accent);
+      color: var(--accent-text);
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .actions button {
+      min-height: 60px;
+    }
+    .start {
+      background: var(--accent);
+      color: var(--accent-text);
+    }
+    .end {
+      background: var(--danger);
+      color: var(--danger-text);
+    }
+    .small {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
 
     @media (max-width: 470px) {
-      body { padding: 10px; }
-      .app { padding: 18px; }
-      .settings { align-items: flex-start; flex-direction: column; }
-      .actions { grid-template-columns: 1fr; }
-      .urlrow button { padding: 12px; }
-      h1 { font-size: 25px; }
+      body {
+        padding: 10px;
+      }
+      .app {
+        padding: 18px;
+      }
+      .settings {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .urlrow button {
+        padding: 12px;
+      }
+      h1 {
+        font-size: 25px;
+      }
+    }
+
+    /* 좁은 창과 스크롤 상태에서도 주요 조작에 접근할 수 있는 하단 도크 */
+    body {
+      padding-bottom: 250px;
+    }
+    .control-dock {
+      position: fixed;
+      left: 50%;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      z-index: 20;
+      max-height: calc(100dvh - 20px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      width: min(750px, calc(100% - 40px));
+      padding: 14px 24px 18px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: 0 12px 36px #00000024;
+    }
+    .control-dock .vol {
+      margin-top: 0;
+    }
+    .control-dock .settings {
+      margin: 12px 0;
+    }
+    .control-dock .actions button {
+      min-height: 52px;
+    }
+    @media (max-width: 470px) {
+      body {
+        padding-bottom: 320px;
+      }
+      .control-dock {
+        width: calc(100% - 20px);
+        padding: 12px 16px 14px;
+        bottom: max(8px, env(safe-area-inset-bottom));
+      }
+      .control-dock .settings {
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .control-dock .actions {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .control-dock .actions button {
+        min-height: 48px;
+        padding: 10px 6px;
+        font-size: 14px;
+      }
+      .control-dock .vol {
+        gap: 8px;
+      }
+      .control-dock .vol label {
+        font-size: 13px;
+      }
+      .control-dock .options button {
+        padding: 8px 10px;
+      }
+    }
+    @media (max-height: 430px) {
+      .control-dock {
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+      .control-dock .settings {
+        margin: 6px 0;
+      }
+      .control-dock .actions button {
+        min-height: 38px;
+      }
     }
   </style>
 </head>
@@ -226,6 +467,22 @@
       <div class="placeholder" id="placeholder">유튜브 주소를 입력하고 불러오기를 눌러주세요.</div>
     </div>
 
+    <p class="small">
+      ※ 이 페이지에서 재생한 음악만 제어합니다. PC 전체 음소거는 하지 않습니다.<br>
+      ※ 일부 유튜브 영상은 외부 사이트 재생이 차단될 수 있습니다. 예배 전에 확인해 주세요.
+    </p>
+  </main>
+
+  <!-- 음악 조작은 화면 아래에 항상 표시합니다. 기존 ID와 이벤트 연결은 유지합니다. -->
+  <aside class="control-dock" aria-label="음악 재생 컨트롤">
+    <div class="fade-in-setting">
+      <label class="fade-in-toggle" for="fadeInEnabled">
+        <input id="fadeInEnabled" type="checkbox">
+        페이드 인 사용 (3초)
+      </label>
+      <p class="fade-in-hint">음악을 처음 시작할 때 3초 동안 서서히 커집니다.</p>
+    </div>
+
     <div class="vol">
       <label for="volume">시작 볼륨</label>
       <input id="volume" type="range" min="0" max="100" value="70">
@@ -246,14 +503,25 @@
       <button id="end" class="end" disabled>◼ 음악 종료</button>
     </div>
 
-    <p class="small">
-      ※ 이 페이지에서 재생한 음악만 제어합니다. PC 전체 음소거는 하지 않습니다.<br>
-      ※ 일부 유튜브 영상은 외부 사이트 재생이 차단될 수 있습니다. 예배 전에 확인해 주세요.
-    </p>
-  </main>
+  </aside>
 
   <script>
-    // 첫 방문에는 시스템 테마를 따르고, 아이콘 클릭 시 반대 테마로 전환합니다.
+    // 고정 컨트롤에 본문이 가리지 않도록 실제 도크 높이에 맞춰 여백을 조정합니다.
+    (() => {
+      const dock = document.querySelector('.control-dock');
+      if (!dock) return;
+      const syncDockSpace = () => {
+        const bottomGap = parseFloat(getComputedStyle(dock).bottom) || 0;
+        document.body.style.paddingBottom = `${Math.ceil(dock.getBoundingClientRect().height + bottomGap + 24)}px`;
+      };
+      syncDockSpace();
+      window.addEventListener('resize', syncDockSpace);
+      if ('ResizeObserver' in window) new ResizeObserver(syncDockSpace).observe(dock);
+    })();
+  </script>
+
+  <script>
+    // 저장된 선택이 없으면 시스템 테마를 따르고, 클릭 시 반대 테마로 전환합니다.
     (() => {
       "use strict";
 
@@ -321,12 +589,18 @@
       const endButton = $("end");
       const volumeInput = $("volume");
       const volumeText = $("volumeText");
+      const fadeInInput = $("fadeInEnabled");
 
       let player = null;
       let ready = false;
       let fadeSeconds = 5;
       let fadeTimer = null;
       let fadeToken = 0;
+      const fadeInDuration = 3000;
+      let fadeInTimer = null;
+      let fadeInToken = 0;
+      let fadeInPending = false;
+      let hasStartedPlayback = false;
       let loadedVideoId = "";
       let mode = "idle";
       let apiRequested = false;
@@ -397,7 +671,8 @@
           localStorage.setItem("prayerSettings", JSON.stringify({
             url: urlInput.value,
             volume: Number(volumeInput.value),
-            fadeSec: fadeSeconds
+            fadeSec: fadeSeconds,
+            fadeInEnabled: fadeInInput.checked
           }));
         } catch (error) {
           // 저장소를 사용할 수 없어도 음악 기능은 계속 동작합니다.
@@ -412,6 +687,7 @@
             volumeInput.value = Math.min(100, Math.max(0, settings.volume));
           }
           if ([3, 4, 5].includes(settings.fadeSec)) fadeSeconds = settings.fadeSec;
+          fadeInInput.checked = settings.fadeInEnabled === true;
         } catch (error) {
           // 이전 설정이 손상되었으면 기본값을 사용합니다.
         }
@@ -465,6 +741,45 @@
         }
       }
 
+      function cancelFadeIn() {
+        fadeInToken += 1;
+        fadeInPending = false;
+        if (fadeInTimer !== null) {
+          clearInterval(fadeInTimer);
+          fadeInTimer = null;
+        }
+      }
+
+      function beginFadeIn() {
+        if (!fadeInPending || !player || !ready) return;
+        fadeInPending = false;
+        const token = ++fadeInToken;
+        const targetVolume = Number(volumeInput.value);
+        const startedAt = performance.now();
+        setStatus("playing", "음악 재생 중", "3초 동안 음악 볼륨을 서서히 높이고 있습니다…");
+
+        fadeInTimer = setInterval(() => {
+          if (token !== fadeInToken) return;
+          const progress = Math.min(1, (performance.now() - startedAt) / fadeInDuration);
+          try {
+            player.setVolume(Math.round(targetVolume * progress));
+            if (progress >= 1) {
+              cancelFadeIn();
+              setStatus("playing", "음악 재생 중", "예배 시작 직전에 음악 종료를 눌러주세요.");
+            }
+          } catch (error) {
+            cancelFadeIn();
+            mode = "error";
+            updateButtons();
+            setStatus("error", "페이드 인을 완료하지 못했습니다", "플레이어를 확인해 주세요.", {
+              cause: "볼륨 제어 도중 플레이어와 통신하지 못했습니다.",
+              solution: "플레이어 상태를 확인하고 음악을 다시 시작해 주세요.",
+              code: "Selah 볼륨 제어 오류 · YouTube 오류 코드 없음"
+            });
+          }
+        }, 50);
+      }
+
       function clearLoadTimeout() {
         if (loadTimeout !== null) {
           clearTimeout(loadTimeout);
@@ -498,6 +813,9 @@
 
       function createPlayer(videoId) {
         clearLoadTimeout();
+        cancelFadeIn();
+        cancelFade();
+        hasStartedPlayback = false;
         ready = false;
         mode = "loading";
         updateButtons();
@@ -517,6 +835,9 @@
 
         loadTimeout = setTimeout(() => {
           if (version !== requestVersion || ready || mode !== "loading") return;
+          loadTimeout = null;
+          mode = "error";
+          updateButtons();
           setStatus("error", "영상 연결이 지연되고 있습니다", "플레이어 응답을 기다리는 중입니다.", {
             cause: "네트워크 지연이나 브라우저 설정 등으로 로딩이 늦어질 수 있습니다.",
             solution: "잠시 기다리거나 새로고침한 뒤 다시 시도해 주세요.",
@@ -549,11 +870,23 @@
 
               if (event.data === YT.PlayerState.PLAYING) {
                 mode = "playing";
-                setStatus("playing", "음악 재생 중", "예배 시작 직전에 음악 종료를 눌러주세요.");
+                hasStartedPlayback = true;
+                if (fadeInPending) {
+                  beginFadeIn();
+                } else if (fadeInTimer === null) {
+                  setStatus("playing", "음악 재생 중", "예배 시작 직전에 음악 종료를 눌러주세요.");
+                }
               } else if (event.data === YT.PlayerState.ENDED) {
+                cancelFadeIn();
+                hasStartedPlayback = false;
                 mode = "ready";
                 setStatus("done", "영상 재생 완료", "영상이 끝났습니다.");
               } else if (event.data === YT.PlayerState.PAUSED && mode === "playing") {
+                const wasFadingIn = fadeInPending || fadeInTimer !== null;
+                cancelFadeIn();
+                if (wasFadingIn) {
+                  event.target.setVolume(Number(volumeInput.value));
+                }
                 mode = "ready";
                 setStatus("ready", "음악 일시정지", "음악 시작 버튼을 누르면 다시 재생됩니다.");
               }
@@ -563,6 +896,8 @@
             onError(event) {
               if (version !== requestVersion) return;
               clearLoadTimeout();
+              cancelFadeIn();
+              cancelFade();
               ready = false;
               mode = "error";
               updateButtons();
@@ -588,6 +923,7 @@
         }
 
         cancelFade();
+        cancelFadeIn();
         loadedVideoId = videoId;
         saveSettings();
 
@@ -604,8 +940,11 @@
       startButton.addEventListener("click", () => {
         if (!ready || !player) return;
         cancelFade();
+        cancelFadeIn();
+        const useFadeIn = fadeInInput.checked && !hasStartedPlayback;
+        fadeInPending = useFadeIn;
         player.unMute();
-        player.setVolume(Number(volumeInput.value));
+        player.setVolume(useFadeIn ? 0 : Number(volumeInput.value));
         player.playVideo();
         mode = "playing";
         updateButtons();
@@ -615,6 +954,7 @@
       endButton.addEventListener("click", () => {
         if (!ready || !player || mode !== "playing") return;
         cancelFade();
+        cancelFadeIn();
         mode = "fading";
         updateButtons();
 
@@ -637,6 +977,7 @@
               player.setVolume(0);
               player.mute();
               player.pauseVideo();
+              hasStartedPlayback = false;
               mode = "ready";
               updateButtons();
               setStatus("done", "음악 종료 완료", "볼륨 0% · 음소거 · 재생 일시정지");
@@ -657,11 +998,12 @@
       volumeInput.addEventListener("input", () => {
         volumeText.textContent = `${volumeInput.value}%`;
         saveSettings();
-        if (ready && mode !== "fading") {
+        if (ready && mode !== "fading" && fadeInTimer === null && !fadeInPending) {
           try { player.setVolume(Number(volumeInput.value)); } catch (error) { /* 무시 */ }
         }
       });
 
+      fadeInInput.addEventListener("change", saveSettings);
       urlInput.addEventListener("change", saveSettings);
       document.querySelectorAll("[data-sec]").forEach((button) => {
         button.addEventListener("click", () => {
