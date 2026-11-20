@@ -131,9 +131,6 @@
       stroke-linecap: round;
       stroke-linejoin: round;
     }
-    .theme-icon [hidden] {
-      display: none;
-    }
 
     /* 상태 표시줄: 제목 아래에 일반 배치 (스크롤 시 함께 이동) */
     .status {
@@ -459,6 +456,17 @@
       }
     }
 
+    /* 모바일에서 주소 입력에 집중할 때는 키보드와 겹치는 도크를 잠시 숨깁니다. */
+    @media (max-width: 799px) {
+      body.url-editing .control-dock {
+        visibility: hidden;
+        pointer-events: none;
+      }
+      body.url-editing {
+        padding-bottom: 24px !important;
+      }
+    }
+
     /* 반응형 레이아웃: 800px 이상은 2열, 미만은 하단 고정 컨트롤 */
     .workspace {
       width: 100%;
@@ -624,8 +632,7 @@
         <h1>Selah<span aria-hidden="true">.</span></h1>
         <div class="theme-picker">
           <button type="button" class="theme-icon" id="themeToggle" aria-label="다크 모드로 전환" title="다크 모드로 전환">
-            <svg id="themeSun" viewBox="0 0 24 24" aria-hidden="true" hidden><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
-            <svg id="themeMoon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/></svg>
+            <svg id="themeIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/></svg>
           </button>
         </div>
       </div>
@@ -698,6 +705,7 @@
       const dock = document.querySelector('.control-dock');
       if (!dock) return;
       const syncDockSpace = () => {
+        if (document.body.classList.contains('url-editing')) return;
         // 2열 데스크톱에서는 도크가 본문 흐름에 있으므로 추가 여백이 필요하지 않습니다.
         if (window.matchMedia('(min-width: 800px)').matches) {
           document.body.style.paddingBottom = '';
@@ -709,6 +717,16 @@
       syncDockSpace();
       window.addEventListener('resize', syncDockSpace);
       if ('ResizeObserver' in window) new ResizeObserver(syncDockSpace).observe(dock);
+
+      // 주소 입력 중에는 모바일 키보드가 하단 컨트롤을 밀어 올리지 않도록 처리합니다.
+      const urlInput = document.getElementById('url');
+      urlInput.addEventListener('focus', () => {
+        document.body.classList.add('url-editing');
+      });
+      urlInput.addEventListener('blur', () => {
+        document.body.classList.remove('url-editing');
+        requestAnimationFrame(syncDockSpace);
+      });
     })();
   </script>
 
@@ -720,8 +738,9 @@
       const storageKey = "selahTheme";
       const root = document.documentElement;
       const toggleButton = document.getElementById("themeToggle");
-      const sunIcon = document.getElementById("themeSun");
-      const moonIcon = document.getElementById("themeMoon");
+      const themeIcon = document.getElementById("themeIcon");
+      const moonMarkup = '<path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/>';
+      const sunMarkup = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>';
       const media = window.matchMedia("(prefers-color-scheme: dark)");
       let selected = "system";
 
@@ -739,8 +758,7 @@
         root.dataset.theme = effectiveTheme;
 
         const switchToDark = effectiveTheme === "light";
-        moonIcon.hidden = !switchToDark;
-        sunIcon.hidden = switchToDark;
+        themeIcon.innerHTML = switchToDark ? moonMarkup : sunMarkup;
         const label = switchToDark ? "다크 모드로 전환" : "라이트 모드로 전환";
         toggleButton.setAttribute("aria-label", label);
         toggleButton.title = label;
