@@ -458,9 +458,166 @@
         min-height: 38px;
       }
     }
+
+    /* 반응형 레이아웃: 800px 이상은 2열, 미만은 하단 고정 컨트롤 */
+    .workspace {
+      width: 100%;
+      min-width: 0;
+    }
+
+    @media (min-width: 800px) {
+      body {
+        padding: 36px 28px 48px;
+      }
+      .workspace {
+        display: grid;
+        grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr);
+        align-items: start;
+        gap: 24px;
+        max-width: 1260px;
+        margin: 0 auto;
+      }
+      .app {
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding: 30px;
+      }
+      .control-dock {
+        position: sticky;
+        top: 36px;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        width: 100%;
+        min-width: 0;
+        max-height: calc(100dvh - 72px);
+        padding: 22px;
+        box-shadow: var(--shadow);
+      }
+      .control-dock .settings {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+        margin: 18px 0;
+      }
+      .control-dock .vol {
+        flex-wrap: wrap;
+      }
+      .control-dock .vol label {
+        width: 100%;
+      }
+      .control-dock .vol input {
+        flex: 1;
+        min-width: 0;
+      }
+      .control-dock .actions {
+        bottom: -22px;
+      }
+      .small {
+        margin-top: 22px;
+      }
+    }
+
+    /* 데스크톱과 중간 화면: 플레이어가 남은 화면 높이를 사용하도록 조절합니다.
+       높이가 충분한 창에서는 페이지 전체가 한 화면에 들어옵니다. */
+    @media (min-width: 800px) and (min-height: 680px) {
+      body {
+        padding: 20px 28px;
+      }
+      .workspace {
+        height: calc(100dvh - 40px);
+        align-items: stretch;
+      }
+      .app {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 0;
+        padding: 24px 30px;
+      }
+      .app .playerwrap {
+        flex: 1 1 auto;
+        min-height: 0;
+        height: auto;
+        aspect-ratio: auto;
+        margin-top: 16px;
+      }
+      .app .small {
+        flex: 0 0 auto;
+        margin-top: 16px;
+      }
+      .control-dock {
+        align-self: start;
+        top: 20px;
+        max-height: calc(100dvh - 40px);
+      }
+    }
+
+    @media (min-width: 800px) and (max-height: 640px) {
+      .control-dock {
+        top: 12px;
+        max-height: calc(100dvh - 24px);
+      }
+      .control-dock .fade-in-hint {
+        display: none;
+      }
+    }
+
+    /* 중간 화면에서도 2열을 유지하면서 간격과 내부 여백을 줄입니다. */
+    @media (min-width: 800px) and (max-width: 1099px) {
+      body { padding-left: 16px; padding-right: 16px; }
+      .workspace {
+        grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr);
+        gap: 14px;
+      }
+      .app { padding-left: 20px; padding-right: 20px; }
+      .control-dock { padding: 16px; }
+      .control-dock .settings { margin: 12px 0; }
+      .control-dock .actions { bottom: -16px; gap: 8px; }
+      .control-dock .actions button { padding: 10px 6px; font-size: 14px; }
+    }
+
+    @media (max-width: 799px) {
+      .control-dock {
+        width: calc(100% - 20px);
+        bottom: max(8px, env(safe-area-inset-bottom));
+        padding: 12px 16px 14px;
+      }
+      .control-dock .settings {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .control-dock .actions {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        bottom: -14px;
+      }
+      .control-dock .actions button {
+        min-height: 48px;
+        padding: 10px 6px;
+        font-size: 14px;
+      }
+      .control-dock .vol {
+        gap: 8px;
+      }
+      .control-dock .vol label {
+        font-size: 13px;
+      }
+      .control-dock .options button {
+        padding: 8px 10px;
+      }
+    }
+
+    @media (max-width: 470px) {
+      .control-dock .fade-in-hint {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="workspace">
   <main class="app">
     <header class="heading">
       <div class="heading-row">
@@ -472,7 +629,7 @@
           </button>
         </div>
       </div>
-      <p class="sub">예배를 준비하는 음악</p>
+      <p class="sub">음악의 시작과 끝을 부드럽게</p>
     </header>
 
     <label for="url">유튜브 음악 주소</label>
@@ -487,7 +644,7 @@
 
     <p class="small">
       ※ 이 페이지에서 재생한 음악만 제어합니다. PC 전체 음소거는 하지 않습니다.<br>
-      ※ 일부 유튜브 영상은 외부 사이트 재생이 차단될 수 있습니다. 예배 전에 확인해 주세요.
+      ※ 일부 유튜브 영상은 외부 사이트 재생이 차단될 수 있습니다. 사용 전에 재생 여부를 확인해 주세요.
     </p>
   </main>
 
@@ -533,6 +690,7 @@
     </div>
 
   </aside>
+</div>
 
   <script>
     // 고정 컨트롤에 본문이 가리지 않도록 실제 도크 높이에 맞춰 여백을 조정합니다.
@@ -540,6 +698,11 @@
       const dock = document.querySelector('.control-dock');
       if (!dock) return;
       const syncDockSpace = () => {
+        // 2열 데스크톱에서는 도크가 본문 흐름에 있으므로 추가 여백이 필요하지 않습니다.
+        if (window.matchMedia('(min-width: 800px)').matches) {
+          document.body.style.paddingBottom = '';
+          return;
+        }
         const bottomGap = parseFloat(getComputedStyle(dock).bottom) || 0;
         document.body.style.paddingBottom = `${Math.ceil(dock.getBoundingClientRect().height + bottomGap + 24)}px`;
       };
@@ -807,7 +970,7 @@
             player.setVolume(Math.round(targetVolume * progress));
             if (progress >= 1) {
               cancelFadeIn();
-              setStatus("playing", "음악 재생 중", "예배 시작 직전에 음악 종료를 눌러주세요.");
+              setStatus("playing", "음악 재생 중", "음악을 마칠 때 종료 버튼을 눌러주세요.");
             }
           } catch (error) {
             cancelFadeIn();
@@ -916,7 +1079,7 @@
                 if (fadeInPending) {
                   beginFadeIn();
                 } else if (fadeInTimer === null) {
-                  setStatus("playing", "음악 재생 중", "예배 시작 직전에 음악 종료를 눌러주세요.");
+                  setStatus("playing", "음악 재생 중", "음악을 마칠 때 종료 버튼을 눌러주세요.");
                 }
               } else if (event.data === YT.PlayerState.ENDED) {
                 cancelFadeIn();
