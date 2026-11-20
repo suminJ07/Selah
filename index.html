@@ -68,28 +68,38 @@
     }
 
     .heading {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
       margin-bottom: 16px;
+    }
+
+    .heading-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
 
     h1 { margin: 0 0 6px; font-size: 30px; letter-spacing: -0.8px; }
     .sub { margin: 0; color: var(--muted); font-size: 14px; }
     label { display: block; margin-bottom: 8px; font-weight: 650; }
 
-    .theme-picker { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
-    .theme-picker label { margin: 0; color: var(--muted); font-size: 13px; }
-    .theme-picker select {
-      padding: 9px 10px;
-      border: 1px solid var(--input-border);
+    .theme-picker { display: flex; align-items: center; flex-shrink: 0; }
+    .theme-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border: 1px solid transparent;
       border-radius: 9px;
-      background: var(--input);
-      color: var(--text);
-      font-size: 14px;
+      background: transparent;
+      color: var(--muted);
       cursor: pointer;
     }
+    .theme-icon:hover { background: var(--surface); color: var(--text); }
+    .theme-icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .theme-icon svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .theme-icon [hidden] { display: none; }
 
     /* 상태 표시줄: 제목 아래에 일반 배치 (스크롤 시 함께 이동) */
     .status {
@@ -174,8 +184,6 @@
     @media (max-width: 470px) {
       body { padding: 10px; }
       .app { padding: 18px; }
-      .heading { flex-wrap: wrap; }
-      .theme-picker { margin-left: auto; }
       .settings { align-items: flex-start; flex-direction: column; }
       .actions { grid-template-columns: 1fr; }
       .urlrow button { padding: 12px; }
@@ -186,18 +194,16 @@
 <body>
   <main class="app">
     <header class="heading">
-      <div>
+      <div class="heading-row">
         <h1>Selah<span aria-hidden="true">.</span></h1>
-        <p class="sub">예배를 준비하는 순간 · 기도 음악 컨트롤러</p>
+        <div class="theme-picker">
+          <button type="button" class="theme-icon" id="themeToggle" aria-label="다크 모드로 전환" title="다크 모드로 전환">
+            <svg id="themeSun" viewBox="0 0 24 24" aria-hidden="true" hidden><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+            <svg id="themeMoon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/></svg>
+          </button>
+        </div>
       </div>
-      <div class="theme-picker">
-        <label for="themeSelect">테마</label>
-        <select id="themeSelect" aria-label="화면 테마">
-          <option value="system">시스템</option>
-          <option value="light">라이트</option>
-          <option value="dark">다크</option>
-        </select>
-      </div>
+      <p class="sub">예배를 준비하는 음악</p>
     </header>
 
     <section class="status" id="status" data-kind="idle" role="status" aria-live="polite">
@@ -247,13 +253,15 @@
   </main>
 
   <script>
-    // 테마 설정은 플레이어와 독립적으로 동작합니다.
+    // 첫 방문에는 시스템 테마를 따르고, 아이콘 클릭 시 반대 테마로 전환합니다.
     (() => {
       "use strict";
 
       const storageKey = "selahTheme";
       const root = document.documentElement;
-      const select = document.getElementById("themeSelect");
+      const toggleButton = document.getElementById("themeToggle");
+      const sunIcon = document.getElementById("themeSun");
+      const moonIcon = document.getElementById("themeMoon");
       const media = window.matchMedia("(prefers-color-scheme: dark)");
       let selected = "system";
 
@@ -261,18 +269,25 @@
         const saved = localStorage.getItem(storageKey);
         if (["system", "light", "dark"].includes(saved)) selected = saved;
       } catch (error) {
-        // 브라우저에서 저장소 접근이 차단된 경우 기본 테마를 사용합니다.
+        // 저장소 접근이 차단된 경우 시스템 테마를 사용합니다.
       }
 
       function applyTheme() {
-        root.dataset.theme = selected === "system"
+        const effectiveTheme = selected === "system"
           ? (media.matches ? "dark" : "light")
           : selected;
-        select.value = selected;
+        root.dataset.theme = effectiveTheme;
+
+        const switchToDark = effectiveTheme === "light";
+        moonIcon.hidden = !switchToDark;
+        sunIcon.hidden = switchToDark;
+        const label = switchToDark ? "다크 모드로 전환" : "라이트 모드로 전환";
+        toggleButton.setAttribute("aria-label", label);
+        toggleButton.title = label;
       }
 
-      select.addEventListener("change", () => {
-        selected = select.value;
+      toggleButton.addEventListener("click", () => {
+        selected = root.dataset.theme === "light" ? "dark" : "light";
         try {
           localStorage.setItem(storageKey, selected);
         } catch (error) {
