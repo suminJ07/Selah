@@ -1,10 +1,669 @@
-<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Selah | 기도 음악 컨트롤러</title><style>
-:root{font-family:system-ui,'Malgun Gothic',sans-serif;color-scheme:light;--page:#f7f5ef;--panel:#fffefa;--border:#dedfd7;--text:#28362e;--muted:#66746b;--input:#ffffff;--input-border:#cbd3c9;--video:#e9ece6;--surface:#edf0e9;--accent:#58765e;--accent-text:#fff;--secondary:#e1e7df;--secondary-text:#304535;--danger:#8d4c42;--danger-text:#fff;--shadow:0 20px 55px #273b2b14}
-:root[data-theme="dark"]{color-scheme:dark;--page:#151b1c;--panel:#20292a;--border:#354442;--text:#f0f2ec;--muted:#b4c0b7;--input:#151f20;--input-border:#50635b;--video:#101718;--surface:#2d3936;--accent:#a2b9a1;--accent-text:#18231d;--secondary:#36463e;--secondary-text:#f0f2ec;--danger:#ba776d;--danger-text:#141a18;--shadow:0 20px 55px #0005}
-*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--text);min-height:100vh;display:grid;place-items:center;padding:20px;transition:background .2s,color .2s}.app{width:min(100%,750px);background:var(--panel);border:1px solid var(--border);border-radius:22px;padding:28px;box-shadow:var(--shadow)}.heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:22px}h1{font-size:30px;letter-spacing:-.8px;margin:0 0 6px}.sub{color:var(--muted);margin:0;font-size:14px}label{display:block;font-weight:650;margin-bottom:8px}.urlrow{display:flex;gap:8px}input[type=url]{width:100%;min-width:0;border:1px solid var(--input-border);background:var(--input);color:var(--text);padding:14px;border-radius:10px;font-size:15px}input:focus-visible,button:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}button{cursor:pointer;border:0;border-radius:11px;padding:14px 18px;font-weight:750;font-size:16px;background:var(--secondary);color:var(--secondary-text)}button:disabled{opacity:.42;cursor:not-allowed}.load{white-space:nowrap}.playerwrap{margin-top:18px;background:var(--video);border-radius:12px;overflow:hidden;aspect-ratio:16/9;display:grid;place-items:center}.playerwrap>div{width:100%;height:100%}.placeholder{color:var(--muted);text-align:center;padding:20px}.settings{display:flex;gap:16px;align-items:center;justify-content:space-between;margin:20px 0}.settings label{margin:0}.options{display:flex;gap:5px}.options button{background:var(--secondary);color:var(--secondary-text);padding:10px 14px;font-size:14px}.options button.active{background:var(--accent);color:var(--accent-text)}.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.actions button{min-height:60px}.start{background:var(--accent);color:var(--accent-text)}.end{background:var(--danger);color:var(--danger-text)}.status{min-height:52px;margin-top:18px;padding:12px;background:var(--surface);border-radius:10px;color:var(--text);line-height:1.5}.small{color:var(--muted);font-size:13px;line-height:1.6;margin:16px 0 0}.vol{display:flex;align-items:center;gap:12px;margin-top:18px}.vol label{margin:0;white-space:nowrap}.vol input{width:100%;accent-color:var(--accent);padding:0}.vol span{min-width:38px;text-align:right}.theme-picker{display:flex;align-items:center;gap:7px;flex-shrink:0}.theme-picker label{margin:0;font-size:13px;color:var(--muted)}.theme-picker select{border:1px solid var(--input-border);background:var(--input);color:var(--text);border-radius:9px;padding:9px 10px;font-size:14px;cursor:pointer}@media(max-width:470px){body{padding:10px}.app{padding:18px}.heading{flex-wrap:wrap}.settings{align-items:flex-start;flex-direction:column}.actions{grid-template-columns:1fr}h1{font-size:25px}.urlrow button{padding:12px}.theme-picker{margin-left:auto}}
-</style></head><body><main class="app"><header class="heading"><div><h1>Selah<span aria-hidden="true">.</span></h1><p class="sub">예배를 준비하는 순간 · 기도 음악 컨트롤러</p></div><div class="theme-picker"><label for="themeSelect">테마</label><select id="themeSelect" aria-label="화면 테마"><option value="system">시스템</option><option value="light">라이트</option><option value="dark">다크</option></select></div></header><label for="url">유튜브 음악 주소</label><div class="urlrow"><input id="url" type="url" placeholder="https://youtu.be/..." autocomplete="off"><button class="load" id="load">불러오기</button></div><div class="playerwrap" id="playerWrap"><div class="placeholder" id="placeholder">유튜브 주소를 입력하고<br>불러오기를 눌러주세요.</div></div><div class="vol"><label for="volume">시작 볼륨</label><input id="volume" type="range" min="0" max="100" value="70"><span id="volumeText">70%</span></div><div class="settings"><label>페이드 아웃 시간</label><div class="options" id="fadeOptions"><button data-sec="3">3초</button><button data-sec="4">4초</button><button data-sec="5" class="active">5초</button></div></div><div class="actions"><button id="start" class="start" disabled>▶ 음악 시작</button><button id="end" class="end" disabled>◼ 음악 종료</button></div><div class="status" id="status" role="status" aria-live="polite">음악 주소를 입력해 주세요.</div><p class="small">※ 이 페이지에서 재생한 음악만 제어합니다. PC 전체 음소거는 하지 않습니다.<br>※ 일부 유튜브 영상은 외부 사이트 재생이 차단될 수 있습니다. 예배 전에 재생 여부를 확인해 주세요.</p></main><script>
-(()=>{'use strict';const key='selahTheme',root=document.documentElement,select=document.getElementById('themeSelect'),media=window.matchMedia('(prefers-color-scheme: dark)');let selected='system';try{const stored=localStorage.getItem(key);if(['system','light','dark'].includes(stored))selected=stored}catch(e){}function apply(){root.dataset.theme=selected==='system'?(media.matches?'dark':'light'):selected;select.value=selected}select.addEventListener('change',()=>{selected=select.value;try{localStorage.setItem(key,selected)}catch(e){}apply()});if(media.addEventListener)media.addEventListener('change',()=>{if(selected==='system')apply()});else if(media.addListener)media.addListener(()=>{if(selected==='system')apply()});apply()})();
-</script><script>
-(()=>{'use strict';const $=id=>document.getElementById(id),url=$('url'),load=$('load'),start=$('start'),end=$('end'),status=$('status'),vol=$('volume'),volText=$('volumeText');let player=null,ready=false,fadeSec=5,fadeTimer=null,fadeToken=0,loadedId='',mode='empty',apiLoaded=false;const say=s=>status.textContent=s;const save=()=>{try{localStorage.setItem('prayerSettings',JSON.stringify({url:url.value,volume:+vol.value,fadeSec}))}catch(e){}};try{const x=JSON.parse(localStorage.getItem('prayerSettings')||'{}');if(x.url)url.value=x.url;if(Number.isFinite(x.volume))vol.value=Math.min(100,Math.max(0,x.volume));if([3,4,5].includes(x.fadeSec))fadeSec=x.fadeSec}catch(e){}volText.textContent=vol.value+'%';document.querySelectorAll('[data-sec]').forEach(b=>b.classList.toggle('active',+b.dataset.sec===fadeSec));function parseId(s){try{const u=new URL(s.trim());const host=u.hostname.toLowerCase().replace(/^www\./,'');let id='';if(host==='youtu.be')id=u.pathname.split('/')[1];else if(['youtube.com','m.youtube.com','music.youtube.com','youtube-nocookie.com'].includes(host)){if(u.pathname==='/watch')id=u.searchParams.get('v');else if(/^\/(embed|shorts|live)\//.test(u.pathname))id=u.pathname.split('/')[2]}return /^[a-zA-Z0-9_-]{11}$/.test(id||'')?id:null}catch(e){return null}}function buttons(){start.disabled=!ready||mode==='playing'||mode==='fading';end.disabled=!ready||mode!=='playing';load.disabled=mode==='fading'}function cancelFade(){fadeToken++;if(fadeTimer!==null){clearInterval(fadeTimer);fadeTimer=null}}function ensureApi(){if(apiLoaded)return;apiLoaded=true;const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';s.onerror=()=>{say('유튜브 연결에 실패했습니다. 인터넷 연결을 확인해 주세요.');apiLoaded=false};document.head.appendChild(s)}function createPlayer(id){ready=false;mode='loading';buttons();say('영상 연결 중입니다…');if(player){try{player.destroy()}catch(e){}player=null}const wrap=$('playerWrap');wrap.replaceChildren();const node=document.createElement('div');node.id='yt-player';wrap.appendChild(node);player=new YT.Player('yt-player',{videoId:id,width:'100%',height:'100%',playerVars:{playsinline:1,rel:0,origin:location.origin.startsWith('http')?location.origin:undefined},events:{onReady:e=>{ready=true;mode='ready';e.target.setVolume(+vol.value);e.target.pauseVideo();buttons();say('음악 준비 완료. ▶ 음악 시작을 눌러주세요.')},onStateChange:e=>{if(!ready||mode==='fading')return;if(e.data===YT.PlayerState.PLAYING){mode='playing';say('음악 재생 중입니다. 예배 시작 직전에 음악 종료를 눌러주세요.')}else if(e.data===YT.PlayerState.ENDED){mode='ready';say('영상 재생이 끝났습니다.')}else if(e.data===YT.PlayerState.PAUSED&&mode==='playing'){mode='ready';say('음악이 일시정지되었습니다.')}buttons()},onError:e=>{ready=false;mode='error';buttons();const desc={2:'유튜브 주소를 확인해 주세요.',5:'영상 플레이어에서 오류가 발생했습니다.',100:'삭제되었거나 비공개 영상입니다.',101:'이 영상은 외부 웹사이트에서 재생할 수 없습니다.',150:'이 영상은 외부 웹사이트에서 재생할 수 없습니다.'};say('영상 오류 ('+e.data+'): '+(desc[e.data]||'다른 유튜브 영상을 사용해 주세요.'))}}})}window.onYouTubeIframeAPIReady=()=>{if(loadedId)createPlayer(loadedId)};load.onclick=()=>{const id=parseId(url.value);if(!id){say('올바른 유튜브 영상 링크를 입력해 주세요. (재생목록 링크만으로는 불가)');return}cancelFade();loadedId=id;save();if(window.YT&&YT.Player)createPlayer(id);else{mode='loading';buttons();say('유튜브 플레이어를 불러오는 중입니다…');ensureApi()}};start.onclick=()=>{if(!ready||!player)return;cancelFade();player.unMute();player.setVolume(+vol.value);player.playVideo();mode='playing';buttons();say('음악 재생을 시작합니다…')};end.onclick=()=>{if(!ready||!player||mode!=='playing')return;cancelFade();mode='fading';buttons();const token=fadeToken,initial=player.getVolume(),started=performance.now(),duration=fadeSec*1000;say(fadeSec+'초 동안 음악을 서서히 줄이고 있습니다…');fadeTimer=setInterval(()=>{if(token!==fadeToken)return;const p=Math.min(1,(performance.now()-started)/duration);try{player.setVolume(Math.round(initial*(1-p)));if(p>=1){clearInterval(fadeTimer);fadeTimer=null;player.setVolume(0);player.mute();player.pauseVideo();mode='ready';buttons();say('음악 종료 완료. 볼륨 0%, 플레이어 음소거 및 일시정지되었습니다.')}}catch(e){cancelFade();mode='error';buttons();say('페이드 아웃 중 오류가 발생했습니다. 플레이어를 확인해 주세요.')}},50)};vol.oninput=()=>{volText.textContent=vol.value+'%';save();if(ready&&mode!=='fading'){try{player.setVolume(+vol.value)}catch(e){}}};url.onchange=save;document.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{fadeSec=+b.dataset.sec;document.querySelectorAll('[data-sec]').forEach(x=>x.classList.toggle('active',x===b));save()});buttons()})();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selah | 기도 음악 컨트롤러</title>
+  <style>
+    :root {
+      font-family: system-ui, "Malgun Gothic", sans-serif;
+      color-scheme: light;
+      --page: #f7f5ef;
+      --panel: #fffefa;
+      --border: #dedfd7;
+      --text: #28362e;
+      --muted: #66746b;
+      --input: #ffffff;
+      --input-border: #cbd3c9;
+      --video: #e9ece6;
+      --surface: #edf0e9;
+      --accent: #58765e;
+      --accent-text: #ffffff;
+      --secondary: #e1e7df;
+      --secondary-text: #304535;
+      --danger: #8d4c42;
+      --danger-text: #ffffff;
+      --shadow: 0 20px 55px #273b2b14;
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --page: #151b1c;
+      --panel: #20292a;
+      --border: #354442;
+      --text: #f0f2ec;
+      --muted: #b4c0b7;
+      --input: #151f20;
+      --input-border: #50635b;
+      --video: #101718;
+      --surface: #2d3936;
+      --accent: #a2b9a1;
+      --accent-text: #18231d;
+      --secondary: #36463e;
+      --secondary-text: #f0f2ec;
+      --danger: #ba776d;
+      --danger-text: #141a18;
+      --shadow: 0 20px 55px #0005;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 20px;
+      background: var(--page);
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .app {
+      width: min(100%, 750px);
+      margin: 0 auto;
+      padding: 28px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    h1 { margin: 0 0 6px; font-size: 30px; letter-spacing: -0.8px; }
+    .sub { margin: 0; color: var(--muted); font-size: 14px; }
+    label { display: block; margin-bottom: 8px; font-weight: 650; }
+
+    .theme-picker { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+    .theme-picker label { margin: 0; color: var(--muted); font-size: 13px; }
+    .theme-picker select {
+      padding: 9px 10px;
+      border: 1px solid var(--input-border);
+      border-radius: 9px;
+      background: var(--input);
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* 상단 상태 표시줄: 페이지 스크롤 중에도 표시 */
+    .status {
+      position: sticky;
+      top: 10px;
+      z-index: 5;
+      margin-bottom: 20px;
+      padding: 13px 15px;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--muted);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: 0 6px 20px #0000000a;
+    }
+
+    .status[data-kind="ready"],
+    .status[data-kind="playing"],
+    .status[data-kind="done"] { border-left-color: var(--accent); }
+
+    .status[data-kind="fading"] { border-left-color: #c78e44; }
+    .status[data-kind="error"] { border-left-color: var(--danger); }
+    .status-title { font-weight: 750; font-size: 15px; }
+    .status-message { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .error-details { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .error-details p { margin: 5px 0; font-size: 13px; line-height: 1.6; }
+    .error-code { color: var(--muted); font-size: 12px; }
+
+    .urlrow { display: flex; gap: 8px; }
+    input[type="url"] {
+      width: 100%;
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      background: var(--input);
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    button {
+      padding: 14px 18px;
+      border: 0;
+      border-radius: 11px;
+      background: var(--secondary);
+      color: var(--secondary-text);
+      font-size: 16px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    button:disabled { opacity: 0.42; cursor: not-allowed; }
+    .load { white-space: nowrap; }
+
+    input:focus-visible,
+    button:focus-visible,
+    select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+    .playerwrap {
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      margin-top: 18px;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      background: var(--video);
+    }
+
+    .playerwrap > div { width: 100%; height: 100%; }
+    .placeholder { padding: 20px; color: var(--muted); text-align: center; }
+    .vol { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+    .vol label { margin: 0; white-space: nowrap; }
+    .vol input { width: 100%; padding: 0; accent-color: var(--accent); }
+    .vol span { min-width: 38px; text-align: right; }
+    .settings { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 20px 0; }
+    .settings label { margin: 0; }
+    .options { display: flex; gap: 5px; }
+    .options button { padding: 10px 14px; font-size: 14px; }
+    .options button.active { background: var(--accent); color: var(--accent-text); }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .actions button { min-height: 60px; }
+    .start { background: var(--accent); color: var(--accent-text); }
+    .end { background: var(--danger); color: var(--danger-text); }
+    .small { margin: 16px 0 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+    @media (max-width: 470px) {
+      body { padding: 10px; }
+      .app { padding: 18px; }
+      .heading { flex-wrap: wrap; }
+      .theme-picker { margin-left: auto; }
+      .settings { align-items: flex-start; flex-direction: column; }
+      .actions { grid-template-columns: 1fr; }
+      .urlrow button { padding: 12px; }
+      h1 { font-size: 25px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="heading">
+      <div>
+        <h1>Selah<span aria-hidden="true">.</span></h1>
+        <p class="sub">예배를 준비하는 순간 · 기도 음악 컨트롤러</p>
+      </div>
+      <div class="theme-picker">
+        <label for="themeSelect">테마</label>
+        <select id="themeSelect" aria-label="화면 테마">
+          <option value="system">시스템</option>
+          <option value="light">라이트</option>
+          <option value="dark">다크</option>
+        </select>
+      </div>
+    </header>
+
+    <section class="status" id="status" data-kind="idle" role="status" aria-live="polite">
+      <div class="status-title" id="statusTitle">음악 대기 중</div>
+      <p class="status-message" id="statusMessage">유튜브 음악 주소를 입력해 주세요.</p>
+      <div class="error-details" id="errorDetails" hidden>
+        <p><strong>발생 가능한 원인</strong> · <span id="errorCause"></span></p>
+        <p><strong>해결 방법</strong> · <span id="errorSolution"></span></p>
+        <span class="error-code" id="errorCode"></span>
+      </div>
+    </section>
+
+    <label for="url">유튜브 음악 주소</label>
+    <div class="urlrow">
+      <input id="url" type="url" placeholder="https://youtu.be/..." autocomplete="off">
+      <button class="load" id="load">불러오기</button>
+    </div>
+
+    <div class="playerwrap" id="playerWrap">
+      <div class="placeholder" id="placeholder">유튜브 주소를 입력하고 불러오기를 눌러주세요.</div>
+    </div>
+
+    <div class="vol">
+      <label for="volume">시작 볼륨</label>
+      <input id="volume" type="range" min="0" max="100" value="70">
+      <span id="volumeText">70%</span>
+    </div>
+
+    <div class="settings">
+      <label>페이드 아웃 시간</label>
+      <div class="options" id="fadeOptions" aria-label="페이드 아웃 시간">
+        <button data-sec="3">3초</button>
+        <button data-sec="4">4초</button>
+        <button data-sec="5" class="active">5초</button>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="start" class="start" disabled>▶ 음악 시작</button>
+      <button id="end" class="end" disabled>◼ 음악 종료</button>
+    </div>
+
+    <p class="small">
+      ※ 이 페이지에서 재생한 음악만 제어합니다. PC 전체 음소거는 하지 않습니다.<br>
+      ※ 일부 유튜브 영상은 외부 사이트 재생이 차단될 수 있습니다. 예배 전에 확인해 주세요.
+    </p>
+  </main>
+
+  <script>
+    // 테마 설정은 플레이어와 독립적으로 동작합니다.
+    (() => {
+      "use strict";
+
+      const storageKey = "selahTheme";
+      const root = document.documentElement;
+      const select = document.getElementById("themeSelect");
+      const media = window.matchMedia("(prefers-color-scheme: dark)");
+      let selected = "system";
+
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (["system", "light", "dark"].includes(saved)) selected = saved;
+      } catch (error) {
+        // 브라우저에서 저장소 접근이 차단된 경우 기본 테마를 사용합니다.
+      }
+
+      function applyTheme() {
+        root.dataset.theme = selected === "system"
+          ? (media.matches ? "dark" : "light")
+          : selected;
+        select.value = selected;
+      }
+
+      select.addEventListener("change", () => {
+        selected = select.value;
+        try {
+          localStorage.setItem(storageKey, selected);
+        } catch (error) {
+          // 저장 실패해도 현재 화면의 테마 전환은 유지합니다.
+        }
+        applyTheme();
+      });
+
+      const onSystemThemeChange = () => {
+        if (selected === "system") applyTheme();
+      };
+
+      if (media.addEventListener) {
+        media.addEventListener("change", onSystemThemeChange);
+      } else if (media.addListener) {
+        media.addListener(onSystemThemeChange);
+      }
+
+      applyTheme();
+    })();
+  </script>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const $ = (id) => document.getElementById(id);
+      const urlInput = $("url");
+      const loadButton = $("load");
+      const startButton = $("start");
+      const endButton = $("end");
+      const volumeInput = $("volume");
+      const volumeText = $("volumeText");
+
+      let player = null;
+      let ready = false;
+      let fadeSeconds = 5;
+      let fadeTimer = null;
+      let fadeToken = 0;
+      let loadedVideoId = "";
+      let mode = "idle";
+      let apiRequested = false;
+      let loadTimeout = null;
+      let requestVersion = 0;
+
+      const youtubeErrors = {
+        2: {
+          title: "영상 정보를 확인할 수 없습니다",
+          cause: "유튜브 플레이어가 잘못된 영상 ID 또는 매개변수를 받았습니다.",
+          solution: "유튜브 공유 링크를 다시 복사하거나 다른 영상을 사용해 주세요."
+        },
+        5: {
+          title: "플레이어에서 영상을 재생하지 못했습니다",
+          cause: "HTML5 플레이어에서 재생 문제가 발생했습니다.",
+          solution: "페이지를 새로고침하거나 다른 브라우저에서 시도해 주세요."
+        },
+        100: {
+          title: "영상을 찾을 수 없습니다",
+          cause: "영상이 삭제되었거나 비공개 상태일 수 있습니다.",
+          solution: "유튜브에서 해당 영상이 열리는지 확인하거나 다른 영상을 선택해 주세요."
+        },
+        101: {
+          title: "외부 사이트 재생이 제한되었습니다",
+          cause: "영상 소유자가 다른 웹사이트에서의 재생을 허용하지 않았습니다.",
+          solution: "외부 재생이 허용된 다른 유튜브 영상을 사용해 주세요."
+        },
+        150: {
+          title: "외부 사이트 재생이 제한되었습니다",
+          cause: "영상 소유자가 다른 웹사이트에서의 재생을 허용하지 않았습니다.",
+          solution: "외부 재생이 허용된 다른 유튜브 영상을 사용해 주세요."
+        },
+        153: {
+          title: "플레이어 실행 환경을 확인할 수 없습니다",
+          cause: "유튜브가 필요한 HTTP Referer 또는 동등한 식별 정보를 받지 못했습니다.",
+          solution: "GitHub Pages의 HTTPS 주소에서 접속했는지 확인하고 다시 시도해 주세요."
+        }
+      };
+
+      function setStatus(kind, title, message, detail = null) {
+        $("status").dataset.kind = kind;
+        $("statusTitle").textContent = title;
+        $("statusMessage").textContent = message;
+        $("errorDetails").hidden = !detail;
+
+        if (detail) {
+          $("errorCause").textContent = detail.cause;
+          $("errorSolution").textContent = detail.solution;
+          $("errorCode").textContent = detail.code || "";
+        }
+      }
+
+      function showError(code) {
+        const info = youtubeErrors[code] || {
+          title: "영상을 재생하지 못했습니다",
+          cause: "유튜브 플레이어에서 알 수 없는 오류가 전달되었습니다.",
+          solution: "페이지를 새로고침하거나 다른 영상을 사용해 주세요."
+        };
+
+        setStatus("error", info.title, "아래 안내를 확인해 주세요.", {
+          ...info,
+          code: `YouTube 오류 코드: ${code}`
+        });
+      }
+
+      function saveSettings() {
+        try {
+          localStorage.setItem("prayerSettings", JSON.stringify({
+            url: urlInput.value,
+            volume: Number(volumeInput.value),
+            fadeSec: fadeSeconds
+          }));
+        } catch (error) {
+          // 저장소를 사용할 수 없어도 음악 기능은 계속 동작합니다.
+        }
+      }
+
+      function restoreSettings() {
+        try {
+          const settings = JSON.parse(localStorage.getItem("prayerSettings") || "{}");
+          if (settings.url) urlInput.value = settings.url;
+          if (Number.isFinite(settings.volume)) {
+            volumeInput.value = Math.min(100, Math.max(0, settings.volume));
+          }
+          if ([3, 4, 5].includes(settings.fadeSec)) fadeSeconds = settings.fadeSec;
+        } catch (error) {
+          // 이전 설정이 손상되었으면 기본값을 사용합니다.
+        }
+
+        volumeText.textContent = `${volumeInput.value}%`;
+        document.querySelectorAll("[data-sec]").forEach((button) => {
+          button.classList.toggle("active", Number(button.dataset.sec) === fadeSeconds);
+        });
+      }
+
+      function parseVideoId(rawUrl) {
+        try {
+          const parsed = new URL(rawUrl.trim());
+          if (!["https:", "http:"].includes(parsed.protocol)) return null;
+
+          const hostname = parsed.hostname.toLowerCase().replace(/^www\./, "");
+          let videoId = "";
+
+          if (hostname === "youtu.be") {
+            videoId = parsed.pathname.split("/")[1];
+          } else if ([
+            "youtube.com",
+            "m.youtube.com",
+            "music.youtube.com",
+            "youtube-nocookie.com"
+          ].includes(hostname)) {
+            if (parsed.pathname === "/watch") {
+              videoId = parsed.searchParams.get("v");
+            } else if (/^\/(embed|shorts|live)\//.test(parsed.pathname)) {
+              videoId = parsed.pathname.split("/")[2];
+            }
+          }
+
+          return /^[a-zA-Z0-9_-]{11}$/.test(videoId || "") ? videoId : null;
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function updateButtons() {
+        startButton.disabled = !ready || mode === "playing" || mode === "fading";
+        endButton.disabled = !ready || mode !== "playing";
+        loadButton.disabled = mode === "fading";
+      }
+
+      function cancelFade() {
+        fadeToken += 1;
+        if (fadeTimer !== null) {
+          clearInterval(fadeTimer);
+          fadeTimer = null;
+        }
+      }
+
+      function clearLoadTimeout() {
+        if (loadTimeout !== null) {
+          clearTimeout(loadTimeout);
+          loadTimeout = null;
+        }
+      }
+
+      function ensureYoutubeApi() {
+        if (window.YT && YT.Player) {
+          createPlayer(loadedVideoId);
+          return;
+        }
+        if (apiRequested) return;
+
+        apiRequested = true;
+        const script = document.createElement("script");
+        script.src = "https://www.youtube.com/iframe_api";
+        script.onerror = () => {
+          apiRequested = false;
+          clearLoadTimeout();
+          mode = "error";
+          updateButtons();
+          setStatus("error", "유튜브 연결에 실패했습니다", "플레이어 스크립트를 불러오지 못했습니다.", {
+            cause: "네트워크 연결, 브라우저 차단 설정 등 여러 원인이 있을 수 있습니다.",
+            solution: "인터넷 연결을 확인하고 페이지를 새로고침해 주세요.",
+            code: "Selah 연결 오류 · YouTube 오류 코드 없음"
+          });
+        };
+        document.head.appendChild(script);
+      }
+
+      function createPlayer(videoId) {
+        clearLoadTimeout();
+        ready = false;
+        mode = "loading";
+        updateButtons();
+        setStatus("loading", "영상 연결 중", "유튜브 플레이어를 준비하고 있습니다…");
+
+        if (player) {
+          try { player.destroy(); } catch (error) { /* 이미 제거된 플레이어 */ }
+          player = null;
+        }
+
+        const version = ++requestVersion;
+        const wrapper = $("playerWrap");
+        wrapper.replaceChildren();
+        const mount = document.createElement("div");
+        mount.id = "yt-player";
+        wrapper.appendChild(mount);
+
+        loadTimeout = setTimeout(() => {
+          if (version !== requestVersion || ready || mode !== "loading") return;
+          setStatus("error", "영상 연결이 지연되고 있습니다", "플레이어 응답을 기다리는 중입니다.", {
+            cause: "네트워크 지연이나 브라우저 설정 등으로 로딩이 늦어질 수 있습니다.",
+            solution: "잠시 기다리거나 새로고침한 뒤 다시 시도해 주세요.",
+            code: "Selah 로딩 지연 · YouTube 오류 코드 없음"
+          });
+        }, 15000);
+
+        player = new YT.Player("yt-player", {
+          videoId,
+          width: "100%",
+          height: "100%",
+          playerVars: {
+            playsinline: 1,
+            rel: 0,
+            origin: location.origin.startsWith("http") ? location.origin : undefined
+          },
+          events: {
+            onReady(event) {
+              if (version !== requestVersion) return;
+              clearLoadTimeout();
+              ready = true;
+              mode = "ready";
+              event.target.setVolume(Number(volumeInput.value));
+              event.target.pauseVideo();
+              updateButtons();
+              setStatus("ready", "음악 준비 완료", "음악 시작 버튼을 눌러주세요.");
+            },
+            onStateChange(event) {
+              if (version !== requestVersion || !ready || mode === "fading") return;
+
+              if (event.data === YT.PlayerState.PLAYING) {
+                mode = "playing";
+                setStatus("playing", "음악 재생 중", "예배 시작 직전에 음악 종료를 눌러주세요.");
+              } else if (event.data === YT.PlayerState.ENDED) {
+                mode = "ready";
+                setStatus("done", "영상 재생 완료", "영상이 끝났습니다.");
+              } else if (event.data === YT.PlayerState.PAUSED && mode === "playing") {
+                mode = "ready";
+                setStatus("ready", "음악 일시정지", "음악 시작 버튼을 누르면 다시 재생됩니다.");
+              }
+
+              updateButtons();
+            },
+            onError(event) {
+              if (version !== requestVersion) return;
+              clearLoadTimeout();
+              ready = false;
+              mode = "error";
+              updateButtons();
+              showError(event.data);
+            }
+          }
+        });
+      }
+
+      window.onYouTubeIframeAPIReady = () => {
+        if (loadedVideoId) createPlayer(loadedVideoId);
+      };
+
+      loadButton.addEventListener("click", () => {
+        const videoId = parseVideoId(urlInput.value);
+        if (!videoId) {
+          setStatus("error", "유튜브 주소를 확인해 주세요", "올바른 영상 링크를 입력해 주세요.", {
+            cause: "지원하지 않는 주소이거나 영상 ID가 포함되어 있지 않습니다.",
+            solution: "유튜브 영상의 공유 버튼을 눌러 링크를 복사해 주세요. 재생목록만 있는 링크는 지원하지 않습니다.",
+            code: "Selah 주소 확인 · YouTube 오류 코드 없음"
+          });
+          return;
+        }
+
+        cancelFade();
+        loadedVideoId = videoId;
+        saveSettings();
+
+        if (window.YT && YT.Player) {
+          createPlayer(videoId);
+        } else {
+          mode = "loading";
+          updateButtons();
+          setStatus("loading", "플레이어 불러오는 중", "유튜브 연결을 준비하고 있습니다…");
+          ensureYoutubeApi();
+        }
+      });
+
+      startButton.addEventListener("click", () => {
+        if (!ready || !player) return;
+        cancelFade();
+        player.unMute();
+        player.setVolume(Number(volumeInput.value));
+        player.playVideo();
+        mode = "playing";
+        updateButtons();
+        setStatus("loading", "재생 요청 중", "음악이 시작되는지 확인하고 있습니다…");
+      });
+
+      endButton.addEventListener("click", () => {
+        if (!ready || !player || mode !== "playing") return;
+        cancelFade();
+        mode = "fading";
+        updateButtons();
+
+        const token = fadeToken;
+        const initialVolume = player.getVolume();
+        const startedAt = performance.now();
+        const duration = fadeSeconds * 1000;
+
+        setStatus("fading", "페이드 아웃 중", `${fadeSeconds}초 동안 음악을 서서히 줄이고 있습니다…`);
+
+        fadeTimer = setInterval(() => {
+          if (token !== fadeToken) return;
+          const progress = Math.min(1, (performance.now() - startedAt) / duration);
+
+          try {
+            player.setVolume(Math.round(initialVolume * (1 - progress)));
+            if (progress >= 1) {
+              clearInterval(fadeTimer);
+              fadeTimer = null;
+              player.setVolume(0);
+              player.mute();
+              player.pauseVideo();
+              mode = "ready";
+              updateButtons();
+              setStatus("done", "음악 종료 완료", "볼륨 0% · 음소거 · 재생 일시정지");
+            }
+          } catch (error) {
+            cancelFade();
+            mode = "error";
+            updateButtons();
+            setStatus("error", "페이드 아웃을 완료하지 못했습니다", "플레이어를 확인해 주세요.", {
+              cause: "볼륨 제어 도중 플레이어와 통신하지 못했습니다.",
+              solution: "음악이 계속 들린다면 유튜브 플레이어에서 직접 일시정지해 주세요.",
+              code: "Selah 볼륨 제어 오류 · YouTube 오류 코드 없음"
+            });
+          }
+        }, 50);
+      });
+
+      volumeInput.addEventListener("input", () => {
+        volumeText.textContent = `${volumeInput.value}%`;
+        saveSettings();
+        if (ready && mode !== "fading") {
+          try { player.setVolume(Number(volumeInput.value)); } catch (error) { /* 무시 */ }
+        }
+      });
+
+      urlInput.addEventListener("change", saveSettings);
+      document.querySelectorAll("[data-sec]").forEach((button) => {
+        button.addEventListener("click", () => {
+          fadeSeconds = Number(button.dataset.sec);
+          document.querySelectorAll("[data-sec]").forEach((item) => {
+            item.classList.toggle("active", item === button);
+          });
+          saveSettings();
+        });
+      });
+
+      restoreSettings();
+      updateButtons();
+    })();
+  </script>
+</body>
+</html>
