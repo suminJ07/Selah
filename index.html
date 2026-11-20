@@ -137,8 +137,8 @@
 
     /* 상태 표시줄: 제목 아래에 일반 배치 (스크롤 시 함께 이동) */
     .status {
-      margin-bottom: 20px;
-      padding: 13px 15px;
+      margin-bottom: 12px;
+      padding: 11px 13px;
       border: 1px solid var(--border);
       border-left: 4px solid var(--muted);
       border-radius: 12px;
@@ -169,6 +169,9 @@
       line-height: 1.5;
     }
     .error-details {
+      max-height: min(22dvh, 170px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
       margin-top: 10px;
       padding-top: 10px;
       border-top: 1px solid var(--border);
@@ -181,6 +184,28 @@
     .error-code {
       color: var(--muted);
       font-size: 12px;
+    }
+
+    .error-toggle {
+      display: inline-flex;
+      margin-top: 7px;
+      padding: 4px 0;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .error-toggle[hidden], .error-details[hidden] { display: none; }
+    .control-dock .status-message { overflow-wrap: anywhere; }
+    .control-dock .actions {
+      position: sticky;
+      bottom: -18px;
+      z-index: 1;
+      padding-top: 8px;
+      background: var(--panel);
     }
 
     .urlrow {
@@ -419,6 +444,9 @@
       }
     }
     @media (max-height: 430px) {
+      .control-dock .status { padding: 8px 10px; margin-bottom: 8px; }
+      .control-dock .fade-in-hint { display: none; }
+      .control-dock .actions { bottom: -8px; }
       .control-dock {
         padding-top: 8px;
         padding-bottom: 8px;
@@ -447,16 +475,6 @@
       <p class="sub">예배를 준비하는 음악</p>
     </header>
 
-    <section class="status" id="status" data-kind="idle" role="status" aria-live="polite">
-      <div class="status-title" id="statusTitle">음악 대기 중</div>
-      <p class="status-message" id="statusMessage">유튜브 음악 주소를 입력해 주세요.</p>
-      <div class="error-details" id="errorDetails" hidden>
-        <p><strong>발생 가능한 원인</strong> · <span id="errorCause"></span></p>
-        <p><strong>해결 방법</strong> · <span id="errorSolution"></span></p>
-        <span class="error-code" id="errorCode"></span>
-      </div>
-    </section>
-
     <label for="url">유튜브 음악 주소</label>
     <div class="urlrow">
       <input id="url" type="url" placeholder="https://youtu.be/..." autocomplete="off">
@@ -475,6 +493,17 @@
 
   <!-- 음악 조작은 화면 아래에 항상 표시합니다. 기존 ID와 이벤트 연결은 유지합니다. -->
   <aside class="control-dock" aria-label="음악 재생 컨트롤">
+    <section class="status" id="status" data-kind="idle" role="status" aria-live="polite">
+      <div class="status-title" id="statusTitle">음악 대기 중</div>
+      <p class="status-message" id="statusMessage">유튜브 음악 주소를 입력해 주세요.</p>
+      <button type="button" class="error-toggle" id="errorToggle" aria-expanded="false" aria-controls="errorDetails" hidden>자세히 보기</button>
+      <div class="error-details" id="errorDetails" hidden>
+        <p><strong>발생 가능한 원인</strong> · <span id="errorCause"></span></p>
+        <p><strong>해결 방법</strong> · <span id="errorSolution"></span></p>
+        <span class="error-code" id="errorCode"></span>
+      </div>
+    </section>
+
     <div class="fade-in-setting">
       <label class="fade-in-toggle" for="fadeInEnabled">
         <input id="fadeInEnabled" type="checkbox">
@@ -644,7 +673,12 @@
         $("status").dataset.kind = kind;
         $("statusTitle").textContent = title;
         $("statusMessage").textContent = message;
-        $("errorDetails").hidden = !detail;
+        const errorToggle = $("errorToggle");
+        const errorDetails = $("errorDetails");
+        errorToggle.hidden = !detail;
+        errorToggle.setAttribute("aria-expanded", "false");
+        errorToggle.textContent = "자세히 보기";
+        errorDetails.hidden = true;
 
         if (detail) {
           $("errorCause").textContent = detail.cause;
@@ -652,6 +686,14 @@
           $("errorCode").textContent = detail.code || "";
         }
       }
+
+      $("errorToggle").addEventListener("click", () => {
+        const details = $("errorDetails");
+        const expanded = details.hidden;
+        details.hidden = !expanded;
+        $("errorToggle").setAttribute("aria-expanded", String(expanded));
+        $("errorToggle").textContent = expanded ? "접기" : "자세히 보기";
+      });
 
       function showError(code) {
         const info = youtubeErrors[code] || {
